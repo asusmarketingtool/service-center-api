@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -9,24 +9,27 @@ app.use(express.json());
 const serviceCenters = [
   {
     name: "SAMTEK",
-    city: "chile",
+    region: "Región Metropolitana",
+    comuna: "Las Condes",
     address: "Nueva Tajamar 481, Torre Sur, Oficina 1601. Las Condes (265.2km)",
-    products: "Notebook, Desktop PC, All-in-one PCs, Eee Pad, Eee"
+    products: "Notebook, Desktop PC, All-in-one PCs, Eee Pad, Eee PC, Chromebox, Eee Book, Commercial NB, ZenPad, Gaming NB, Gaming DT, GAMING HANDHELDS",
+    map: "🗺️ Mapa: (imagen a ser añadida más adelante)" // Placeholder
   }
 ];
 
 app.post('/nearest', (req, res) => {
-  const city = req.body.city;
-  if (!city) {
-    return res.status(400).send({ error: "Please send a city name" });
+  const comuna = req.body.comuna?.toLowerCase();
+
+  if (!comuna) {
+    return res.status(400).send({ error: "Comuna is required." });
   }
 
-  const found = serviceCenters.find(sc => sc.city.toLowerCase() === city.toLowerCase());
+  const match = serviceCenters.find(sc => sc.comuna.toLowerCase() === comuna);
 
-  if (found) {
-    res.send({ nearest: found });
+  if (match) {
+    res.send({ center: match });
   } else {
-    res.status(404).send({ error: "No service center found for that city" });
+    res.status(404).send({ error: "No service center found for that comuna." });
   }
 });
 
