@@ -6,10 +6,11 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Normalization function: removes accents, trims spaces, lowercase
+// Helper function to normalize region names
 const normalize = str =>
   str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, '').trim();
 
+// Example service center
 const serviceCenters = [
   {
     name: "SAMTEK",
@@ -21,15 +22,22 @@ const serviceCenters = [
 ];
 
 app.post('/nearest', (req, res) => {
-  const regionInput = normalize(req.body.region || "");
+  const rawInput = req.body.region || "";
+  const regionInput = normalize(rawInput);
 
-  const match = serviceCenters.find(sc =>
-    normalize(sc.region) === regionInput
-  );
+  console.log("🔍 Received region:", rawInput);
+  console.log("🧼 Normalized region:", regionInput);
+
+  const match = serviceCenters.find(sc => {
+    const normalizedRegion = normalize(sc.region);
+    console.log("🧾 Comparing with:", normalizedRegion);
+    return normalizedRegion === regionInput;
+  });
 
   if (match) {
     res.send({ center: match });
   } else {
+    console.log("❌ No match found for region:", regionInput);
     res.status(404).send({ error: "No service center found for that region." });
   }
 });
