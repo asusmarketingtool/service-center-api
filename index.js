@@ -6,6 +6,10 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Normalization function: removes accents, trims spaces, lowercase
+const normalize = str =>
+  str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, '').trim();
+
 const serviceCenters = [
   {
     name: "SAMTEK",
@@ -17,13 +21,11 @@ const serviceCenters = [
 ];
 
 app.post('/nearest', (req, res) => {
-  const region = req.body.region?.toLowerCase();
+  const regionInput = normalize(req.body.region || "");
 
-  if (!region) {
-    return res.status(400).send({ error: "Region is required." });
-  }
-
-  const match = serviceCenters.find(sc => sc.region.toLowerCase() === region);
+  const match = serviceCenters.find(sc =>
+    normalize(sc.region) === regionInput
+  );
 
   if (match) {
     res.send({ center: match });
