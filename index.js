@@ -10,26 +10,25 @@ const serviceCenters = [
   {
     name: "SAMTEK",
     region: "Región Metropolitana",
-    comuna: "Las Condes",
     address: "Nueva Tajamar 481, Torre Sur, Oficina 1601. Las Condes (265.2km)",
     products: "Notebook, Desktop PC, All-in-one PCs, Eee Pad, Eee PC, Chromebox, Eee Book, Commercial NB, ZenPad, Gaming NB, Gaming DT, GAMING HANDHELDS",
-    map: "🗺️ Mapa: (imagen a ser añadida más adelante)" // Placeholder
+    map: "🗺️ Mapa: (imagen a ser añadida más adelante)"
   }
 ];
 
 app.post('/nearest', (req, res) => {
-  const comuna = req.body.comuna?.toLowerCase();
+  const region = req.body.region?.toLowerCase();
 
-  if (!comuna) {
-    return res.status(400).send({ error: "Comuna is required." });
+  if (!region) {
+    return res.status(400).send({ error: "Region is required." });
   }
 
-  const match = serviceCenters.find(sc => sc.comuna.toLowerCase() === comuna);
+  const match = serviceCenters.find(sc => sc.region.toLowerCase() === region);
 
   if (match) {
     res.send({ center: match });
   } else {
-    res.status(404).send({ error: "No service center found for that comuna." });
+    res.status(404).send({ error: "No service center found for that region." });
   }
 });
 
