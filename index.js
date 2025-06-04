@@ -6,11 +6,9 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Helper function to normalize region names
 const normalize = str =>
   str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, '').trim();
 
-// Example service center
 const serviceCenters = [
   {
     name: "SAMTEK",
@@ -35,7 +33,7 @@ app.post('/nearest', (req, res) => {
   });
 
   if (match) {
-    res.send({ center: match });
+    res.send(match); // ✅ Flattened response
   } else {
     console.log("❌ No match found for region:", regionInput);
     res.status(404).send({ error: "No service center found for that region." });
